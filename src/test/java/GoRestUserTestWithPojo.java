@@ -32,7 +32,7 @@ public class GoRestUserTestWithPojo {
         user.setStatus("active");
     }
 
-    @Test(priority = 1)
+    @Test
     public void newUserTest(){
 
         user.setId(given()
@@ -45,9 +45,11 @@ public class GoRestUserTestWithPojo {
                 .statusCode(201)
                 .body("name",equalTo(user.getName()))
                 .extract().jsonPath().getString("id"));
+
+        System.out.println("User ID: " + user.getId() +  "!!!!!!!!!!!");
     }
 
-    @Test(priority = 2)
+    @Test(dependsOnMethods = "newUserTest")
     public void newUserNegativeTest(){
         given()
                 .spec(reqSpec)
@@ -59,7 +61,7 @@ public class GoRestUserTestWithPojo {
                 .statusCode(422);
     }
 
-    @Test(priority = 3)
+    @Test(dependsOnMethods = "newUserNegativeTest")
     public void getUserTest(){
         given()
                 .spec(reqSpec)
@@ -74,7 +76,7 @@ public class GoRestUserTestWithPojo {
                 .body("status", equalTo(user.getStatus()));
 
     }
-    @Test(priority = 4)
+    @Test(dependsOnMethods = "getUserTest")
     public void editUserTest(){
 
         HashMap<String,String> body = new HashMap<>();
@@ -92,7 +94,7 @@ public class GoRestUserTestWithPojo {
 
     }
 
-    @Test(priority = 5)
+    @Test(dependsOnMethods = "editUserTest")
     public void deleteUserTest(){
         given()
                 .spec(reqSpec)
@@ -103,7 +105,7 @@ public class GoRestUserTestWithPojo {
                 .statusCode(204);
     }
 
-    @Test(priority = 6)
+    @Test(dependsOnMethods = "deleteUserTest")
     public void deleteUserNegativeTest(){
         given()
                 .spec(reqSpec)
