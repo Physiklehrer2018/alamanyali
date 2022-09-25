@@ -5,9 +5,7 @@ import io.restassured.http.Cookies;
 import io.restassured.specification.RequestSpecification;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
 import java.util.HashMap;
-
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
 

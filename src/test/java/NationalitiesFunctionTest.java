@@ -1,20 +1,20 @@
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.http.Cookies;
-import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
 import java.util.HashMap;
-import static org.hamcrest.Matchers.*;
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.equalTo;
 
 public class NationalitiesFunctionTest {
 
     private RequestSpecification reqSpec;
     private Cookies cookies;
     private String national_id;
+    private HashMap<String ,String> reqBody;
+    private HashMap<String,String> upReqBody;
 
     @BeforeClass
     public void setup(){
@@ -43,10 +43,11 @@ public class NationalitiesFunctionTest {
                 .extract().detailedCookies();
     }
 
-    @Test
+    @Test(dependsOnMethods = "loginTest")
     public void newNationalityTest(){
-        HashMap<String ,String> reqBody = new HashMap<>();
-        reqBody.put("name","NewQA Mahmut Nation");
+
+        reqBody = new HashMap<>();
+        reqBody.put("name","QA331 Hasan99 Nation44");
 
         national_id = given()
                 .spec(reqSpec)
@@ -57,16 +58,17 @@ public class NationalitiesFunctionTest {
                 .then()
                 .statusCode(201)
                 .body("name",equalTo(reqBody.get("name")))
+                .log().body()
                 .extract().jsonPath().getString("id");
     }
 
     @Test(dependsOnMethods = "newNationalityTest")
     public void newNationalityNegativeTest(){
 
-        HashMap<String ,String> reqBody = new HashMap<>();
-        reqBody.put("name","NewQA Mahmut Nation");
+        reqBody = new HashMap<>();
+        reqBody.put("name","QA331 Hasan99 Nation44");
 
-        national_id = given()
+        given()
                 .spec(reqSpec)
                 .cookies(cookies)
                 .body(reqBody)
@@ -74,33 +76,83 @@ public class NationalitiesFunctionTest {
                 .post("/school-service/api/nationality")
                 .then()
                 .log().body()
-                .statusCode(400)
-                .extract().jsonPath().getString("id");;
-
+                .statusCode(400);
     }
 
-    @Test
+    @Test(dependsOnMethods = "newNationalityNegativeTest")
     public void getNationalityTest(){
 
+        given()
+                .spec(reqSpec)
+                .cookies(cookies)
+                .log().body()
+                .when()
+                .get("/school-service/api/nationality/" + national_id)
+                .then()
+                .statusCode(200)
+                .body("name", equalTo(reqBody.get("name")))
+                .log().body();
+
     }
 
-    @Test
+    @Test(dependsOnMethods = "getNationalityTest")
     public void editNationalityTest(){
 
+        upReqBody = new HashMap<>();
+        upReqBody.put("id", national_id);
+        upReqBody.put("name","QA33 Hasan44 Nation");
+
+        given()
+                .spec(reqSpec)
+                .cookies(cookies)
+                .body(upReqBody)
+                .log().body()
+                .when()
+                .put("/school-service/api/nationality/")
+                .then()
+                .log().body()
+                .body("name", equalTo(upReqBody.get("name")))
+                .statusCode(200);
     }
 
-    @Test
+    @Test(dependsOnMethods = "editNationalityTest")
     public void deleteNationalityTest(){
 
+        given()
+                .spec(reqSpec)
+                .cookies(cookies)
+                .when()
+                .delete("/school-service/api/nationality/" + national_id)
+                .then()
+                .statusCode(200);
+
     }
 
-    @Test
+    @Test(dependsOnMethods = "deleteNationalityTest")
     public void GetNationalityNegativeTest(){
 
+        given()
+                .spec(reqSpec)
+                .cookies(cookies)
+                .log().body()
+                .when()
+                .get("/school-service/api/nationality/" + national_id)
+                .then()
+                .statusCode(400)
+                .log().body();
+
     }
 
-    @Test
+    @Test(dependsOnMethods = "GetNationalityNegativeTest")
     public void DeleteNationalityNegativeTest(){
+
+        given()
+                .spec(reqSpec)
+                .cookies(cookies)
+                .when()
+                .delete("/school-service/api/nationality/" + national_id)
+                .then()
+                .statusCode(400);
 
     }
 }
