@@ -1,0 +1,4 @@
+file:src/test/resources/com/circleboom/features/CreateNewPost_MultipleAccount.feature:9:13:19:27:42:52:62:79
+file:src/test/resources/com/circleboom/features/CreateNewPost_FreeAccount.feature:11:26:38:47:56:69:82
+file:src/test/resources/com/circleboom/features/CreateNewPost_PremiumAccount.feature:10:14:19:35:44:56:65:82
+file:src/test/resources/com/circleboom/features/LoginFromHomePage.feature:10:15:20
